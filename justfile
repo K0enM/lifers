@@ -14,5 +14,11 @@ run: build
 dev-db:
   docker-compose up -d
 
-dev: dev-db
+build-css:
+  npm run build:css
+
+dev: dev-db build-css
   cargo watch -x run
+
+watch-css:
+  npm run watch:css

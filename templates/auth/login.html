@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content%}
+<form action="/login" method="post">
+  <fieldset class="fieldset w-xs bg-base-100 border border-base-300 p-4 rounded-box flex flex-col gap-2">
+    <legend class="fieldset-legend">Login</legend>
+
+    <label class="fieldset-label" for="username">Username</label>
+    <input type="text" class="input" placeholder="Username" name="username" />
+
+    <label class="fieldset-label" for="password">Password</label>
+    <input type="password" class="input" placeholder="Password" name="password" />
+
+    <input type="submit" class="btn btn-primary mt-4" value="Login" />
+
+    {% if let Some(next) = next %}
+    <input type="hidden" name="next" value="{{next}}" />
+    {% endif%}
+  </fieldset>
+</form>
+{% endblock %}

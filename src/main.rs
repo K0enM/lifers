@@ -15,5 +15,5 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv::dotenv().ok();
 
     let app = App::new().await.expect("could not create app");
-    app.serve(8080).await
+    app.serve(3000).await
 }

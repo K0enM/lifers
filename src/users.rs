@@ -4,12 +4,20 @@ use password_auth::verify_password;
 use serde::{Deserialize, Serialize};
 use sqlx::{PgPool, prelude::*};
 use tokio::task;
+use uuid::Uuid;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CreateUser {
+    pub username: String,
+    pub password: String,
+    pub repeat_password: String,
+}
 
 #[derive(Clone, Serialize, Deserialize, FromRow)]
 pub struct User {
-    id: i64,
+    pub id: Uuid,
     pub username: String,
-    password: String,
+    pub password: String,
 }
 
 impl std::fmt::Debug for User {
@@ -23,7 +31,7 @@ impl std::fmt::Debug for User {
 }
 
 impl AuthUser for User {
-    type Id = i64;
+    type Id = Uuid;
 
     fn id(&self) -> Self::Id {
         self.id
@@ -38,6 +46,7 @@ impl AuthUser for User {
 pub struct Credentials {
     pub username: String,
     pub password: String,
+    pub next: Option<String>,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -81,7 +90,7 @@ impl AuthnBackend for Backend {
         &self,
         creds: Self::Credentials,
     ) -> Result<Option<Self::User>, Self::Error> {
-        let user: Option<Self::User> = sqlx::query_as("select * from users where username = ? ")
+        let user: Option<Self::User> = sqlx::query_as("select * from users where username = $1")
             .bind(creds.username)
             .fetch_optional(&self.db)
             .await?;
@@ -100,7 +109,7 @@ impl AuthnBackend for Backend {
         clippy::type_repetition_in_bounds
     )]
     async fn get_user(&self, user_id: &UserId<Self>) -> Result<Option<Self::User>, Self::Error> {
-        let user = sqlx::query_as("select * from users where id = ? ")
+        let user = sqlx::query_as("select * from users where id = $1")
             .bind(user_id)
             .fetch_optional(&self.db)
             .await?;

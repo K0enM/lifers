@@ -3,13 +3,13 @@ use axum_messages::MessagesManagerLayer;
 use sqlx::{PgPool, postgres::PgPoolOptions};
 use time::Duration;
 use tokio::{net::TcpListener, signal};
-use tower_http::trace::TraceLayer;
+use tower_http::{services::ServeDir, trace::TraceLayer};
 use tower_sessions::{ExpiredDeletion, SessionManagerLayer, cookie::Key};
 use tower_sessions_sqlx_store::PostgresStore;
 
 use crate::{
     users::Backend,
-    web::{auth, protected},
+    web::{auth, pages, protected},
 };
 
 pub struct App {
@@ -63,7 +63,9 @@ impl App {
 
         let app = protected::router()
             .route_layer(login_required!(Backend, login_url = "/login"))
+            .merge(pages::router())
             .merge(auth::router())
+            .nest_service("/static", ServeDir::new("static"))
             .with_state(self.state)
             .layer(MessagesManagerLayer)
             .layer(auth_layer);
