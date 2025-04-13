@@ -8,20 +8,40 @@ pub fn router() -> Router<AppState> {
 }
 
 #[derive(Template)]
-#[template(path = "index.html", print = "all")]
-struct RootTemplate {
-    #[allow(dead_code)]
-    name: String,
+#[template(path = "index.html")]
+struct RootTemplate {}
+
+#[derive(Template)]
+#[template(path = "app.html")]
+struct AppTemplate {
+    username: String,
 }
 
 mod get {
-    use axum::response::Html;
+    use axum::{extract::State, response::Html};
+    use axum_messages::Messages;
 
     use super::*;
-    pub(crate) async fn root() -> impl IntoResponse {
-        let root = RootTemplate {
-            name: "Koen".into(),
-        };
-        Html(root.render().unwrap()).into_response()
+    use crate::web::auth::AuthSession;
+
+    pub async fn root(
+        auth_session: AuthSession,
+        _messages: Messages,
+        State(_state): State<AppState>,
+    ) -> impl IntoResponse {
+        match auth_session.user {
+            Some(user) => Html(
+                AppTemplate {
+                    username: user.username,
+                }
+                .render()
+                .unwrap(),
+            )
+            .into_response(),
+            None => {
+                let root = RootTemplate {};
+                Html(root.render().unwrap()).into_response()
+            }
+        }
     }
 }

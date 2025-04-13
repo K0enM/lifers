@@ -25,7 +25,6 @@ axum = {version = "0.8", features = ["macros"]}
 
 # https://docs.rs/axum-extra/latest/axum_extra/
 axum-extra = "0.10"
-
 tower = { version = "0.5", features = ["util"] }
 tower-http = { version = "0.6", features = ["fs", "trace"] }
 serde = { version = "1", features = ["derive"] }
@@ -48,4 +47,6 @@ askama = "0.13.0"
 include_dir = "0.7.4"
 mime_guess = "2.0.5"
 uuid = { version = "1.16.0", features = ["serde", "v4"] }
+axum_csrf = { version = "0.11.0", features = ["layer"] }
+hex = "0.4.3"
 

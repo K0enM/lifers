@@ -11,6 +11,7 @@ pub struct CreateUser {
     pub username: String,
     pub password: String,
     pub repeat_password: String,
+    pub token: String,
 }
 
 #[derive(Clone, Serialize, Deserialize, FromRow)]
@@ -47,6 +48,7 @@ pub struct Credentials {
     pub username: String,
     pub password: String,
     pub next: Option<String>,
+    pub token: String,
 }
 
 #[derive(Debug, thiserror::Error)]
