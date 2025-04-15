@@ -13,6 +13,9 @@ use axum::response::Html;
 use axum::response::IntoResponse;
 use axum::response::Redirect;
 use axum::routing::{get, post};
+use axum_csrf::CsrfToken;
+use axum_messages::Message;
+use axum_messages::Messages;
 use serde::Deserialize;
 use tokio::task;
 use uuid::Uuid;
@@ -36,13 +39,13 @@ struct LoginTemplate {
 #[template(path = "auth/register.html")]
 struct RegisterTemplate {
     token: String,
+    messages: Option<Vec<Message>>,
 }
 
 pub type AuthSession = axum_login::AuthSession<Backend>;
 
 mod post {
     use super::*;
-    use axum_csrf::CsrfToken;
 
     #[axum::debug_handler]
     pub async fn login(
@@ -71,6 +74,7 @@ mod post {
         Redirect::to("/").into_response()
     }
     pub async fn register(
+        messages: Messages,
         State(state): State<AppState>,
         token: CsrfToken,
         Form(form): Form<CreateUser>,
@@ -80,7 +84,8 @@ mod post {
         }
         let db = state.db;
         if form.password != form.repeat_password {
-            todo!()
+            messages.error("Passwords do not match!");
+            return Ok(Redirect::to("/register"));
         }
         let id = Uuid::new_v4();
         let password_hash = task::spawn_blocking(|| password_auth::generate_hash(form.password))
@@ -104,10 +109,9 @@ struct NextUrl {
 }
 
 mod get {
-    use axum_csrf::CsrfToken;
-
     use super::*;
 
+    #[axum::debug_handler]
     pub async fn login(
         token: CsrfToken,
         Query(NextUrl { next }): Query<NextUrl>,
@@ -126,9 +130,16 @@ mod get {
 
         Redirect::to("/").into_response()
     }
-    pub async fn register(token: CsrfToken) -> impl IntoResponse {
+
+    #[axum::debug_handler]
+    pub async fn register(incoming_messages: Messages, token: CsrfToken) -> impl IntoResponse {
         let template = RegisterTemplate {
             token: token.authenticity_token().unwrap(),
+            messages: if !incoming_messages.is_empty() {
+                Some(incoming_messages.into_iter().collect())
+            } else {
+                None
+            },
         };
 
         (token, Html(template.render().unwrap())).into_response()

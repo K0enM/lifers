@@ -18,4 +18,15 @@
     </fieldset>
   </form>
 </main>
+
+{% if messages.is_some() %}
+<div class="toast toast-end toast-middle">
+  {% let messages = messages.as_ref().unwrap() %}
+  {% for message in messages %}
+  <div role="alert" class="alert alert-{{ message.level | lower }}">
+    <span>{{ message.message }}</span>
+  </div>
+  {% endfor %}
+  {% endif %}
+</div>
 {% endblock %}

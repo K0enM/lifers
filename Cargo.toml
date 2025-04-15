@@ -50,3 +50,5 @@ uuid = { version = "1.16.0", features = ["serde", "v4"] }
 axum_csrf = { version = "0.11.0", features = ["layer"] }
 hex = "0.4.3"
 
+[profile.dev.package.askama_derive]
+opt-level = 3
