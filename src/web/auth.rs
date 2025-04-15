@@ -1,8 +1,8 @@
-use crate::users::Backend;
-use crate::users::CreateUser;
-use crate::users::Credentials;
-use crate::users::User;
 use crate::web::app::AppState;
+use crate::web::entities::users::Backend;
+use crate::web::entities::users::CreateUser;
+use crate::web::entities::users::Credentials;
+use crate::web::entities::users::User;
 use askama::Template;
 use axum::Form;
 use axum::Router;

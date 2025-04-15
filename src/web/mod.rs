@@ -1,4 +1,5 @@
 pub(crate) mod app;
-pub(crate) mod auth;
+mod auth;
+mod entities;
 mod fallback;
 pub(crate) mod pages;

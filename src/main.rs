@@ -1,5 +1,3 @@
-mod db;
-mod users;
 mod web;
 
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
@@ -15,5 +13,5 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv::dotenv().ok();
 
     let app = App::new().await.expect("could not create app");
-    app.serve(3000).await
+    app.serve(8080).await
 }

@@ -16,8 +16,11 @@ use tower_sessions::{ExpiredDeletion, SessionManagerLayer, cookie::Key};
 use tower_sessions_sqlx_store::PostgresStore;
 
 use crate::{
-    users::Backend,
-    web::{auth, fallback, pages},
+    web::entities::users::Backend,
+    web::{
+        auth, fallback,
+        pages::{dashboard, index},
+    },
 };
 
 pub struct App {
@@ -72,8 +75,9 @@ impl App {
         let backend = Backend::new(self.state.db.clone());
         let auth_layer = AuthManagerLayerBuilder::new(backend, session_layer).build();
 
-        let app = pages::router()
+        let app = dashboard::router()
             .route_layer(login_required!(Backend, login_url = "/login"))
+            .merge(index::router())
             .merge(auth::router())
             .nest_service(
                 "/static",
