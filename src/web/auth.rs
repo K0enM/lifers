@@ -19,7 +19,6 @@ use axum_messages::Messages;
 use serde::Deserialize;
 use tokio::task;
 use uuid::Uuid;
-
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/login", post(self::post::login))

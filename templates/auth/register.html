@@ -19,14 +19,24 @@
   </form>
 </main>
 
-{% if messages.is_some() %}
+{% if messages is defined && messages.is_some() %}
 <div class="toast toast-end toast-middle">
   {% let messages = messages.as_ref().unwrap() %}
   {% for message in messages %}
-  <div role="alert" class="alert alert-{{ message.level | lower }}">
-    <span>{{ message.message }}</span>
-  </div>
-  {% endfor %}
-  {% endif %}
-</div>
-{% endblock %}
+  {% if message.level == "error" %}
+  <div role="alert" class="alert alert-error">
+    {% else if message.level == "success" %}
+    <div role="alert" class="alert alert-success">
+      {% else if message.level == "info"%}
+      <div role="alert" class="alert alert-info">
+        {% else if message.level == "warning" %}
+        <div role="alert" class="alert alert-warning">
+          {% else %}
+          <div role="alert" class="alert">
+            {% endif %}
+            <span>{{ message.message }}</span>
+          </div>
+          {% endfor %}
+          {% endif %}
+        </div>
+        {% endblock %}
