@@ -1,4 +1,5 @@
 use crate::web::app::AppState;
+use crate::web::entities::users::User;
 use askama::Template;
 use axum::Router;
 use axum::response::IntoResponse;
@@ -14,7 +15,7 @@ struct RootTemplate {}
 #[derive(Template)]
 #[template(path = "app.html")]
 struct AppTemplate {
-    username: String,
+    user: User,
 }
 
 mod get {
@@ -32,7 +33,7 @@ mod get {
         match auth_session.user {
             Some(user) => Html(
                 AppTemplate {
-                    username: user.username,
+                    user,
                 }
                 .render()
                 .unwrap(),

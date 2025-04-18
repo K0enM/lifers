@@ -1,0 +1,19 @@
+{% if messages is defined && messages.is_some() %}
+<div class="toast toast-start toast-top">
+  {% let messages = messages.as_ref().unwrap() %}
+  {% for message in messages %}
+  {% if message.level.to_string() == "Error" %}
+  <div role="alert" class="alert alert-error">
+  {% else if message.level.to_string() == "Success" %}
+  <div role="alert" class="alert alert-success">
+  {% else if message.level.to_string() == "Info"%}
+  <div role="alert" class="alert alert-info">
+  {% else if message.level.to_string() == "Warning" %}
+  <div role="alert" class="alert alert-warning">
+  {% else %}
+  <div role="alert" class="alert">
+  {% endif %}
+    <span>{{ message.message }}</span>
+  </div>
+  {% endfor %}
+{% endif %}

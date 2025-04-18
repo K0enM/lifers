@@ -1,13 +1,10 @@
 use askama::Template;
 use axum::{
-    Router,
-    extract::State,
-    response::IntoResponse,
-    routing::{get, post},
+    extract::State, response::{Html, IntoResponse}, routing::{get, post}, Router
 };
 use axum_messages::Messages;
 
-use crate::web::{app::AppState, auth::AuthSession};
+use crate::web::{app::AppState, auth::AuthSession, entities::users::User};
 
 pub fn router() -> Router<AppState> {
     Router::new()
@@ -20,14 +17,16 @@ pub fn router() -> Router<AppState> {
 
 #[derive(Debug, Template)]
 #[template(path = "workout_schedule/list.html")]
-struct ListTemplate {}
+struct ListTemplate {
+    user: User
+}
 async fn list(
     auth_session: AuthSession,
     _messages: Messages,
     State(_state): State<AppState>,
 ) -> impl IntoResponse {
     let user = auth_session.user.unwrap();
-    "Hello, world".into_response()
+    Html(ListTemplate { user}.render().unwrap()).into_response()
 }
 
 #[derive(Debug, Template)]
